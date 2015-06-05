@@ -12,7 +12,7 @@ infilename = sys.argv[1]
 questions,solutions,student_responses=read_tab_file(infilename)
 
 # We will need put in the password here. 
-my_email_address = "se30maha@siena.edu"
+my_email_address = None
 password = None
 
 my_email_address = getpass.getpass("Enter address from which to send email: ")
