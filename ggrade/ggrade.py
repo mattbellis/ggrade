@@ -173,7 +173,7 @@ def read_tab_file(file_name): #reading a tab file once downloaded from Google Fo
               student[2] = phrase[2:] # Their answers
               student_answers.append(student)
           linecount+=1   
-    print student
+    #print student
 
      
     return questions,solutions,student_answers

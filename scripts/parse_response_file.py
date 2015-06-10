@@ -18,18 +18,42 @@ def main():
     if args.infile_name is not None:
         questions,solutions,student_answers = read_tab_file(args.infile_name)
 
-    outfile_name = 'solutions.py'
-    outfile = open(outfile_name,'w+')
+    solutions_string = "solutions = [ \n"
+    extra_feedback_string = "feedback_for_everyone = [ \n"
+    incorrect_feedback_string = "feedback_for_wrong_answers = [ \n"
 
-    output = "solutions = [ \n"
+    nsolutions = len(solutions)
 
     # For now, assume the solutions are the first one.
-    for solution in solutions:
-        output += "\t\"%s\"\n" % (solution)
+    for i,solution in enumerate(solutions):
+        solutions_string += "\t\"%s\"" % (solution)
+        extra_feedback_string += "\tNone" 
+        incorrect_feedback_string += "\tNone" 
+        if i != nsolutions-1:
+            solutions_string += ",\n"
+            extra_feedback_string += ",\n"
+            incorrect_feedback_string += ",\n"
+        else:
+            solutions_string += "\n"
+            extra_feedback_string += "\n"
+            incorrect_feedback_string += "\n"
 
-    output += "] \n"
+    solutions_string += "] \n"
+    extra_feedback_string += "] \n"
+    incorrect_feedback_string += "] \n"
 
-    print output
+    # Write the output to a file.
+    print solutions_string
+    print extra_feedback_string
+    print incorrect_feedback_string
+    outfile_name = 'solutions.py'
+    outfile = open(outfile_name,'w+')
+    outfile.write(solutions_string)
+    outfile.write("\n")
+    outfile.write(extra_feedback_string)
+    outfile.write("\n")
+    outfile.write(incorrect_feedback_string)
+    outfile.close()
 
 ################################################################################
 ################################################################################
