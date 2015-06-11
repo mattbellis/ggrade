@@ -30,13 +30,13 @@ def main():
         extra_feedback_string += "\tNone" 
         incorrect_feedback_string += "\tNone" 
         if i != nsolutions-1:
-            solutions_string += ",\n"
-            extra_feedback_string += ",\n"
-            incorrect_feedback_string += ",\n"
+            solutions_string += ", # Question %d\n" % (i+1)
+            extra_feedback_string += ", # Question %d\n" % (i+1)
+            incorrect_feedback_string += ", # Question %d\n" % (i+1)
         else:
-            solutions_string += "\n"
-            extra_feedback_string += "\n"
-            incorrect_feedback_string += "\n"
+            solutions_string += " # Question %d \n" % (i+1)
+            extra_feedback_string += " # Question %d \n" % (i+1)
+            incorrect_feedback_string += " # Question %d \n" % (i+1)
 
     solutions_string += "] \n"
     extra_feedback_string += "] \n"

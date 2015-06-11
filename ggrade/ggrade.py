@@ -58,7 +58,7 @@ def email_grade_summaries(email_address,msg_from,msg_subject,msg_body,password="
 ################################################################################
 # Grade an individual problem.
 ################################################################################
-def grade_problem(question,answer,solution,points_per_question):
+def grade_problem(question,answer,solution,points_per_question,feedback_for_everyone=None,feedback_for_wrong_answers=None):
 
     sub_points = 0
     correct = -1
@@ -78,17 +78,24 @@ def grade_problem(question,answer,solution,points_per_question):
             points_per_answer = points_per_question/nsolutions
             sub_points = 0
 
+            #print solution
+            #print answer
+            #print multiple_answers
+            #print multiple_solutions
+
             # Check to see if they got all the answers.
             for msol in multiple_solutions:
                 for mans in multiple_answers:
-                    if msol==mans:
+                    if msol.strip()==mans.strip():
                         sub_points += points_per_answer
+                        #print sub_points
                     
+            #exit()
             # Check to see if someone entered something wrong
             for mans in multiple_answers:
                 found_a_match = False
                 for msol in multiple_solutions:
-                    if msol==mans:
+                    if msol.strip()==mans.strip():
                         found_a_match = True
                 if found_a_match is False:
                     sub_points -= points_per_answer
@@ -109,7 +116,7 @@ def grade_problem(question,answer,solution,points_per_question):
                 correct=-1
          
         # This is not a list but it is also not multiple possible answers. 
-        elif answer==solution or solution==None or solution =='' or solution.lower() in answer.lower() or solution=='essay': 
+        elif answer.strip()==solution.strip() or solution==None or solution =='' or solution.lower() in answer.lower() or solution=='essay': 
             correct=1
         
     # If it is a list, then we will explicitly loop over the options.
@@ -142,6 +149,12 @@ def grade_problem(question,answer,solution,points_per_question):
         
         # This is for partial credit on multiple answers.
         points_received = sub_points
+
+    if feedback_for_everyone is not None:
+        extra_text += "<center>  <i>&emsp;%s <br> </i> </center>" % (feedback_for_everyone)
+
+    if correct!=1 and feedback_for_wrong_answers is not None:
+        extra_text += "<center>  <font color = \"%s\" > <i>&emsp;%s <br> </i> </font> </center>" % (color,feedback_for_wrong_answers)
 
     output += "<center> <font color = \"%s\" > <h1> %s </h1> </font> %s<br> <br>  You answered:   &emsp;  %s <br>  %s" % (color,iscorrect,question,answer,extra_text)
 

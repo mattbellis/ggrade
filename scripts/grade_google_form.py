@@ -11,6 +11,24 @@ infilename = sys.argv[1]
 
 questions,solutions,student_responses=read_tab_file(infilename)
 
+
+################################################################################
+# Read in the solutions from a different file.
+#solutions_filename = sys.argv[1].strip('.py')
+solutions_filename = 'solutions'
+
+solutions_file = __import__(solutions_filename)
+
+solutions = getattr(solutions_file,'solutions')
+feedback_for_everyone = getattr(solutions_file,'feedback_for_everyone')
+feedback_for_wrong_answers = getattr(solutions_file,'feedback_for_wrong_answers')
+
+print solutions
+print feedback_for_everyone
+print feedback_for_wrong_answers
+
+################################################################################
+
 # We will need put in the password here. 
 my_email_address = None
 password = None
@@ -46,9 +64,9 @@ for i,student in enumerate(student_responses):
     # Create an empty string for the email body we will send to the student.
     output = ""
 
-    for question_number,(response,solution,question) in enumerate(zip(student[2],solutions,questions)):
+    for question_number,(response,solution,question,fe,fw) in enumerate(zip(student[2],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers)):
         # Grade an individual problem
-        sub_output,points_received,points_possible=grade_problem(question,response,solution,points_per_question) 
+        sub_output,points_received,points_possible=grade_problem(question,response,solution,points_per_question,fe,fw) 
         # Keep track of how many points the student got for each problem.
         # If the student didn't get all the possible points, change the 1 in the matrix to a 0.
         if points_possible != points_received: 
