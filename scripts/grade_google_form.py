@@ -33,8 +33,8 @@ print feedback_for_wrong_answers
 my_email_address = None
 password = None
 
-my_email_address = getpass.getpass("Enter address from which to send email: ")
-password = getpass.getpass()
+#my_email_address = getpass.getpass("Enter address from which to send email: ")
+#password = getpass.getpass()
 
 points_per_question=10
 
@@ -56,7 +56,8 @@ for i,student in enumerate(student_responses):
 
     # Grab the student email and the timestamp of when they submitted their
     # work.
-    student_email=student[0]
+    #student_email=student[0]
+    student_email="se30maha@siena.edu"
     time = student[1]
 
     print "Grading scores for %s" % (student_email)
@@ -89,7 +90,7 @@ for i,student in enumerate(student_responses):
     # Email the student the feedback.
     ############################################################################
     if password is not None:
-         email_grade_summaries(student_email,my_email_address,'Samples test grade',output,password,isHTML=True)
+         email_grade_summaries(student_email,my_email_address,'Brownie and cookie physics test',output,password,isHTML=True)
 
 
 
