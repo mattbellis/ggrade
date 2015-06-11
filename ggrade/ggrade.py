@@ -19,6 +19,18 @@ def is_float(value):
 ################################################################################
 
 
+################################################################################
+# Test to see if a string contains a number
+################################################################################
+def is_number_in_string(value):
+
+    newstring = ""
+    for letter in value:
+        if letter.isdigit() or letter=='.':
+            newstring += letter
+
+    return newstring
+
 
 ################################################################################
 def email_grade_summaries(email_address,msg_from,msg_subject,msg_body,password="xxx",isHTML=False):
@@ -108,13 +120,25 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
                 correct = 0 # Got some.
 
         elif solution.isdigit() or is_float(solution): #check to see if the answer is a number and if it is in the range
-            fraction_difference = (float(answer) - float(solution))/(float(solution)+.00000000001)
-            within_tolerance = np.abs(fraction_difference)<0.05
-            if within_tolerance:
-                correct=1
+            if answer.isdigit() or is_float(answer):
+                fraction_difference = (float(answer) - float(solution))/(float(solution)+.00000000001)
+                within_tolerance = np.abs(fraction_difference)<0.05
+                #print answer,within_tolerance
+                if within_tolerance:
+                    correct=1
+                else:
+                    correct=-1
+            elif is_number_in_string(answer).isdigit() or is_float(is_number_in_string(answer)):
+                temp_answer = float(is_number_in_string(answer))
+                fraction_difference = (float(temp_answer) - float(solution))/(float(solution)+.00000000001)
+                within_tolerance = np.abs(fraction_difference)<0.05
+                #print temp_answer,within_tolerance
+                if within_tolerance:
+                    correct=1
+                else:
+                    correct=-1
             else:
-                correct=-1
-         
+                correct = -1
         # This is not a list but it is also not multiple possible answers. 
         elif answer.strip()==solution.strip() or solution==None or solution =='' or solution.lower() in answer.lower() or solution=='essay': 
             correct=1
