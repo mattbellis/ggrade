@@ -92,17 +92,19 @@ for i,student in enumerate(student_responses):
     output += "<center> <br> <br> <b> Grade: %6.3f out of %d ----- %4.2f </b> </center>" % (total,total_possible,100*(total/float(total_possible)))
 
 
-    ############################################################################
+    ###########################################################################
     # Email the student the feedback.
-    ############################################################################
+    ###########################################################################
     if password is not None:
          email_grade_summaries(student_email,my_email_address,'Brownie and cookie physics test',output,password,isHTML=True)
 
+###############################################################################
+# Plots each student's score and 
 student_scores=sorted(student_scores)
 
 average=sum(student_scores)/float(len(student_scores))
 student_info= sorted(student_info.items(),key=lambda x:x[1])
-x = np.arange(1,nstudents+1,1)
+x = np.arange(0,nstudents,1)
 
 print student_info
 
@@ -111,7 +113,7 @@ for i,student in enumerate(student_info):
     plt.figure()
     student_plot=plt.scatter(x,student_scores,color='b',marker='^',s=300,label='Individual student scores')
     average_plot=plt.plot([0,nstudents],[average,average],'r--',label='Average score')
-    current_score = plt.scatter(i+1,student[1],color='g',marker='o',s=600,label='Your score')
+    current_score = plt.scatter(i,student[1],color='g',marker='o',s=600,label='Your score')
     plt.yticks(np.arange(0,100,5))
     plt.xticks(np.arange(0,nstudents,1))
     plt.xlim(-1,nstudents+1)
@@ -120,10 +122,10 @@ for i,student in enumerate(student_info):
     plt.xlabel('Student')
     plt.ylabel('Score')
 
-################################################################################
+###############################################################################
 # Summarize the student responses and how the class performed on each
-# question.
-################################################################################
+# question and plot the summary of each student.
+###############################################################################
 colors=['lightskyblue','lightcoral']
 labels=[r'Right',r'Wrong']
 question_label=[]
