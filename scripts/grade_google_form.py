@@ -99,7 +99,11 @@ for i,student in enumerate(student_responses):
          email_grade_summaries(student_email,my_email_address,'Brownie and cookie physics test',output,password,isHTML=True)
 
 ###############################################################################
-# Plots each student's score and 
+# Plots each student's score on one figure. It then loops through each students
+# scores and plots the current student's score. So the number of figures equals 
+# the number of students. Each student has a different graph depending on what 
+# their score is. Also, sorts the scores.
+###############################################################################
 student_scores=sorted(student_scores)
 
 average=sum(student_scores)/float(len(student_scores))
