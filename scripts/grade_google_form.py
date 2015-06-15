@@ -2,6 +2,8 @@ from ggrade import read_tab_file,grade_problem,email_grade_summaries
 import numpy as np
 import getpass
 import sys
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 
 ################################################################################
 # Read in the file with the student responses. 
@@ -40,6 +42,8 @@ points_per_question=10
 
 nstudents = len(student_responses)
 nquestions = len(questions)
+student_scores=[]
+student_info={}
 
 print "# of students:  %d" % (nstudents)
 print "# of questions: %d" % (nquestions)
@@ -56,8 +60,8 @@ for i,student in enumerate(student_responses):
 
     # Grab the student email and the timestamp of when they submitted their
     # work.
-    #student_email=student[0]
-    student_email="se30maha@siena.edu"
+    student_email=student[0]
+    #student_email="se30maha@siena.edu"
     time = student[1]
 
     print "Grading scores for %s" % (student_email)
@@ -80,6 +84,8 @@ for i,student in enumerate(student_responses):
         # Ccalculate total number of points and points possibl.e
         total += points_received 
         total_possible += points_possible 
+    student_scores.append((total/float(total_possible))*100) 
+    student_info[student_email]= ((total/float(total_possible))*100)
 
     # Now we've looped over all the problems for that student.
     # Append a string which summarizes their performance. 
@@ -92,16 +98,57 @@ for i,student in enumerate(student_responses):
     if password is not None:
          email_grade_summaries(student_email,my_email_address,'Brownie and cookie physics test',output,password,isHTML=True)
 
+student_scores=sorted(student_scores)
 
+average=sum(student_scores)/float(len(student_scores))
+student_info= sorted(student_info.items(),key=lambda x:x[1])
+x = np.arange(1,nstudents+1,1)
+
+print student_info
+
+
+for i,student in enumerate(student_info):
+    plt.figure()
+    student_plot=plt.scatter(x,student_scores,color='b',marker='^',s=300,label='Individual student scores')
+    average_plot=plt.plot([0,nstudents],[average,average],'r--',label='Average score')
+    current_score = plt.scatter(i+1,student[1],color='g',marker='o',s=600,label='Your score')
+    plt.yticks(np.arange(0,100,5))
+    plt.xticks(np.arange(0,nstudents,1))
+    plt.xlim(-1,nstudents+1)
+    plt.legend(loc='lower left')
+    plt.title('Summary of Class Scores')
+    plt.xlabel('Student')
+    plt.ylabel('Score')
 
 ################################################################################
 # Summarize the student responses and how the class performed on each
 # question.
 ################################################################################
-for q in assignment_summary.transpose():
+colors=['lightskyblue','lightcoral']
+labels=[r'Right',r'Wrong']
+question_label=[]
+
+x=0
+for q,question in zip(assignment_summary.transpose(),questions):
     ntot = len(q)
     ncorrect = q.sum()
-    print "Out of %d people %d got this question right---- %4.2f%%" % (ntot,ncorrect,100*ncorrect/ntot) #prints how many people got each question right
+    print "Out of %d people %d got this question right---- %4.2f%%" % (ntot,ncorrect,100*ncorrect/ntot)
+    question_num = 'Question #' + str(x+1)
+    question_label.append(question_num)
+    the_grid=GridSpec(7,1)
+    sizes=[ncorrect,ntot-ncorrect]
+    plt.subplot(the_grid[x,0],aspect=1)
+    patches, texts = plt.pie(sizes,colors=colors,shadow=True)
+    plt.axis('equal')
+    plt.tight_layout()
+    x+=1
+    plt.title(question_num,fontweight='bold')
+    plt.text(1.5,0.1,'%4.1f%% of students got this question right' % (100*ncorrect/ntot))
+
+plt.legend(patches,labels,loc=('lower left'),shadow=True)
+    
+
+plt.show()
 
 
 
