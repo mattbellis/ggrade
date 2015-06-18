@@ -13,6 +13,14 @@ import csv
 make_plots = False
 send_emails = False
 
+###############################################################################
+# If you type in "plots" or "email" in the command line, it will set the 
+# corresponding boolean true. Later, it will execute the command if true.
+###############################################################################
+
+infilename = sys.argv[1]
+questions,solutions,student_responses=read_tab_file(infilename)
+
 if len(sys.argv) >2:
     print "yes"
     if sys.argv[2]=="email":
@@ -29,15 +37,12 @@ if len(sys.argv) >2:
         else:
             print "Invalid entry for 5th entry"
 
-infilename = sys.argv[1]
-questions,solutions,student_responses=read_tab_file(infilename)
-
-
 ###############################################################################
 # Read in the solutions from a different file.
 # Should change solutions_filename with each quiz that has different solutions
-# and feeback feedback.
+# and feedback.
 ###############################################################################
+
 #solutions_filename = sys.argv[1].strip('.py')
 solutions_filename = 'solutions' 
 
@@ -55,6 +60,7 @@ print feedback_for_wrong_answers
 # If "emails" and entered into the command line, it will prompt the user for 
 # their Google username and password.
 ###############################################################################
+
 my_email_address = None
 password = None
 
@@ -63,7 +69,7 @@ if send_emails:
     password = getpass.getpass()
 
 scores_file = csv.writer(open('student_scores.csv', "wb"),delimiter=',')
-scores_file.writerow(['Time -------------------------Student Email------------Student Score'])
+scores_file.writerow(['Date/Time -------------------Student Email------------Student Score'])
 
 points_per_question=10
 
@@ -75,9 +81,11 @@ student_info={}
 print "# of students:  %d" % (nstudents)
 print "# of questions: %d" % (nquestions)
 
+###############################################################################
 # Creates a matrix of number of students and number of questions to see 
 # who got questions wrong/right. We initialize it to everyone getting it
 # correct.
+###############################################################################
 assignment_summary = np.ones((nstudents,nquestions)) 
 
 # Loop over each student.
@@ -87,6 +95,7 @@ for i,student in enumerate(student_responses):
 
     # Grab the student email and the timestamp of when they submitted their
     # work- if username is automatically grabbed from Google Forms.
+    
     student_email=student[0]
     #student_email="se30maha@siena.edu"
     time = student[1]
@@ -119,7 +128,7 @@ for i,student in enumerate(student_responses):
     # Append a string which summarizes their performance. 
     output += "<center> <br> <br> <b> Grade: %6.3f out of %d ----- %4.2f </b> </center>" % (total,total_possible,100*(total/float(total_possible)))
     
-    scores_file.writerow([time,'----------',student_email,'----------',this_student_score])
+    scores_file.writerow([str(time) + '----------'+ student_email+'----------'+ str(this_student_score)])
 
     ###########################################################################
     # Email the student the feedback.
@@ -143,10 +152,13 @@ if make_plots:
     student_info= sorted(student_info.items(),key=lambda x:x[1])
     num_of_students = np.arange(0,nstudents,1)
 
-    print student_info
+    print num_of_students
 
 
     for i,student in enumerate(student_info):
+        print i,student,student_info
+        #print num_of_students
+	#print student_scores
         plt.figure()
         student_plot=plt.scatter(num_of_students,student_scores,color='b',marker='^',s=300,label='Individual student scores')
         average_plot=plt.plot([0,nstudents],[average,average],'r--',label='Average score')
@@ -159,10 +171,12 @@ if make_plots:
         plt.xlabel('Student')
         plt.ylabel('Score')
 
+
 ###############################################################################
 # Summarize the student responses and how the class performed on each
 # question and plot the summary of each student.
 ###############################################################################
+
     colors=['lightskyblue','lightcoral']
     labels=[r'Right',r'Wrong']
     question_label=[]
