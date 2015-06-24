@@ -1,6 +1,7 @@
 from ggrade import read_tab_file
 import argparse
 
+
 ################################################################################
 ################################################################################
 def main():
@@ -46,8 +47,11 @@ def main():
     print solutions_string
     print extra_feedback_string
     print incorrect_feedback_string
+    
     outfile_name = args.outfile_name
     outfile = open(outfile_name,'w+')
+    outfile.write("# -*- coding: utf-8 -*-")
+    outfile.write("\n")
     outfile.write(solutions_string)
     outfile.write("\n")
     outfile.write(extra_feedback_string)
