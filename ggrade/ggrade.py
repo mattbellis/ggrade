@@ -5,6 +5,11 @@ from email.mime.text import MIMEText
 import sys
 import csv
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+from email.mime.image import MIMEImage
+import os
+
 
 ################################################################################
 # Test to see if a string actually represents a floating point number.
@@ -39,16 +44,53 @@ def email_grade_summaries(email_address,msg_from,msg_subject,msg_body,password="
     # Use my GMail account
     ################################################################################
     smtpserver = 'smtp.gmail.com'
-    #smtpuser = 'matthew.bellis@gmail.com'  # for SMTP AUTH, set SMTP username here
     smtpuser = msg_from  # for SMTP AUTH, set SMTP username here
     smtppasswd = password  # for SMTP AUTH, set SMTP password here
-    #me = 'matthew.bellis@gmail.com'
     me = msg_from
 
     # Create a text/plain message
     msg = MIMEText(msg_body)
     if isHTML:
         msg = MIMEText(msg_body,'html')
+
+    msg['Subject'] = '%s' % (msg_subject)
+    msg['From'] = me
+    msg['To'] = email_address
+
+    # Send the message via our own SMTP server, but don't include the
+    # envelope header.
+    try:
+        session = smtplib.SMTP('smtp.gmail.com',587)
+        session.starttls()
+        session.login(smtpuser,smtppasswd)
+        session.sendmail(me, email_address, msg.as_string())
+        print "Successfully sent email"
+        session.quit()
+    except smtplib.SMTPException:
+        print "Error: unable to send email"
+
+################################################################################
+
+
+def email_grade_summaries_plots(email_address,msg_from,msg_subject,msg_body,image_file_name,password="xxx",isHTML=False):
+
+    ################################################################################
+    # Use my GMail account
+    ################################################################################
+    smtpserver = 'smtp.gmail.com'
+    smtpuser = msg_from  # for SMTP AUTH, set SMTP username here
+    smtppasswd = password  # for SMTP AUTH, set SMTP password here
+    me = msg_from
+    attach = image_file_name
+    
+    # Create a text/plain message
+    msg = MIMEText(msg_body)
+    if isHTML:
+        msg = MIMEText(msg_body,'html')
+
+    img_data = open(image_file_name,'rb').read()
+    image = MIMEImage(img_data,name=os.path.basename(image_file_name))
+    msg.attach(image)
 
     msg['Subject'] = '%s' % (msg_subject)
     msg['From'] = me
@@ -195,24 +237,76 @@ def read_tab_file(file_name): #reading a tab file once downloaded from Google Fo
     student_answers=[]
     solutions = []
     
-
     for phrase in infile:
           students=[]
-          student = ['Name','Timestamp',[]]
+          student = ['Email','Timestamp','Name',[]]
 	  
           if linecount==0:
-              questions=phrase[2:]
+              questions=phrase[3:]
           elif linecount==1:
-              solutions=phrase[2:]
+              solutions=phrase[3:]
           else:
               student[0] = phrase[1] # Name
               student[1] = phrase[0] # Time stamp
-              student[2] = phrase[2:] # Their answers
+              student[2] = phrase[2] # Student's name
+              student[3] = phrase[3:] # Their answers
               student_answers.append(student)
           linecount+=1   
     #print student
 
-     
     return questions,solutions,student_answers
+
+def make_plots(student_scores,nstudents,student_info,assignment_summary,questions):
+
+    student_scores=sorted(student_scores)
+
+    average=sum(student_scores)/float(len(student_scores))
+    student_info= sorted(student_info.items(),key=lambda x:x[1])
+    num_of_students = np.arange(0,nstudents,1)
+
+    print num_of_students
+
+    for i,student in enumerate(student_info):
+        fig=plt.figure()
+        student_plot=plt.scatter(num_of_students,student_scores,color='b',marker='^',s=300,label='Individual student scores')
+        average_plot=plt.plot([0,nstudents],[average,average],'r--',label='Average score')
+        current_score = plt.scatter(i,student[1],color='g',marker='o',s=600,label='Your score')
+        plt.yticks(np.arange(0,100,5))
+        plt.xticks(np.arange(0,nstudents,1))
+        plt.xlim(-1,nstudents+1)
+        plt.legend(loc='lower left')
+        plt.title('Summary of Class Scores')
+        plt.xlabel('Student')
+        plt.ylabel('Score')
+        fig.savefig('student'+ str(i) + '.png')
+
+###############################################################################
+# Summarize the student responses and how the class performed on each
+# question and plot the summary of each student.
+###############################################################################
+
+    colors=['lightskyblue','lightcoral']
+    labels=[r'Right',r'Wrong']
+    question_label=[]
+    plt.figure()
+    num_of_students=0
+    for q,question in zip(assignment_summary.transpose(),questions):
+        ntot = len(q)
+        ncorrect = q.sum()
+        print "Out of %d people %d got this question right---- %4.2f%%" % (ntot,ncorrect,100*ncorrect/ntot)
+        question_num = 'Question #' + str(num_of_students+1)
+        question_label.append(question_num)
+        the_grid=GridSpec(7,1)
+        sizes=[ncorrect,ntot-ncorrect]
+        plt.subplot(the_grid[num_of_students,0],aspect=1)
+        patches, texts = plt.pie(sizes,colors=colors,shadow=True)
+        plt.axis('equal')
+        plt.tight_layout()
+        num_of_students+=1
+        plt.title(question_num,fontweight='bold')
+        plt.text(1.5,0.1,'%4.1f%% of students got this question right' % (100*ncorrect/ntot))
+    plt.legend(patches,labels,loc=('lower left'),shadow=True)
+
+    plt.show()
 
 

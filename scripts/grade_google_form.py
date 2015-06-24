@@ -1,41 +1,35 @@
-from ggrade import read_tab_file,grade_problem,email_grade_summaries
+from ggrade import read_tab_file,grade_problem,email_grade_summaries,make_plots,email_grade_summaries_plots
 import numpy as np
 import getpass
 import sys
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import csv
+import argparse
+
+###############################################################################
+# If you type in "--plots" or "--email" in the command line, it will set the 
+# corresponding boolean true. Later, it will execute the command if true.
+# Also needs the solution file to execute.
+###############################################################################
+
+parser = argparse.ArgumentParser()
+parser.add_argument('infilename',type=str,default=None,help='Input file name',nargs='?')
+parser.add_argument('--email',action='store_true',dest='send_emails',default=False,help='Call --email if you want emails to be sent')
+parser.add_argument('--plots',action='store_true',dest='make_plots_bool',default=False,help='Call --plots if you want plots to be made')
+parser.add_argument('--solutions-file',dest='solutions_filename',type=str,default='solutions.py',help='Name of the file that has the solutions/feedback')
+parser.add_argument('--score_file',dest='student_score_file',type=str,default='student_scores.csv',help='Name of the file that will organize the students email and score.')
+#parser.add_argument('--email_subject',dest='email_subject',type=str,default='Your quiz feedback',help='If you want an email to be sent, use this to personalize the subject of the email.')
+args=parser.parse_args()
+
+send_emails=args.send_emails
+make_plots_bool=args.make_plots_bool
 
 ###############################################################################
 # Read in the file with the student responses. 
 # (Response Form from Google Forms)
 ###############################################################################
-make_plots = False
-send_emails = False
-
-###############################################################################
-# If you type in "plots" or "email" in the command line, it will set the 
-# corresponding boolean true. Later, it will execute the command if true.
-###############################################################################
-
-infilename = sys.argv[1]
-questions,solutions,student_responses=read_tab_file(infilename)
-
-if len(sys.argv) >2:
-    print "yes"
-    if sys.argv[2]=="email":
-         send_emails = True
-    elif sys.argv[2] == "plots":
-         make_plots=True
-    else:
-         print "Invalid entry for 4th entry"
-    if len(sys.argv) > 3:
-        if sys.argv[3]=="email":
-            send_emails = True
-        elif sys.argv[3] == "plots":
-            make_plots=True
-        else:
-            print "Invalid entry for 5th entry"
+questions,solutions,student_responses=read_tab_file(args.infilename)
 
 ###############################################################################
 # Read in the solutions from a different file.
@@ -43,8 +37,8 @@ if len(sys.argv) >2:
 # and feedback.
 ###############################################################################
 
-#solutions_filename = sys.argv[1].strip('.py')
-solutions_filename = 'solutions' 
+solutions_filename = args.solutions_filename.strip('.py')
+#solutions_filename = 'solutions' 
 
 solutions_file = __import__(solutions_filename)
 
@@ -67,9 +61,10 @@ password = None
 if send_emails:
     my_email_address = getpass.getpass("Enter address from which to send email: ")
     password = getpass.getpass()
+    email_subject=input("What do you want your email subject line to say?")
 
-scores_file = csv.writer(open('student_scores.csv', "wb"),delimiter=',')
-scores_file.writerow(['Date/Time -------------------Student Email------------Student Score'])
+scores_file = csv.writer(open(args.student_score_file, "wb"),delimiter=',')
+scores_file.writerow(['Date/Time','Student Email','Student Name','Student Score'])
 
 points_per_question=10
 
@@ -88,6 +83,34 @@ print "# of questions: %d" % (nquestions)
 ###############################################################################
 assignment_summary = np.ones((nstudents,nquestions)) 
 
+for i,student in enumerate(student_responses):
+    total=0 
+    total_possible=0 
+    student_email=student[0]
+    #student_email="se30maha@siena.edu"
+    time = student[1]
+    student_name=student[2]
+    print "Grading scores for %s" % (student_email)
+    output = ""
+    for question_number,(response,solution,question,fe,fw) in enumerate(zip(student[3],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers)):
+        sub_output,points_received,points_possible=grade_problem(question,response,solution,points_per_question,fe,fw) 
+        if points_possible != points_received: 
+            assignment_summary[i][question_number]=0
+        output += sub_output
+        total += points_received 
+        total_possible += points_possible 
+    this_student_score = round((total/float(total_possible))*100,2)
+    student_scores.append(this_student_score) 
+    student_info[student_email]= (this_student_score)
+
+if make_plots_bool:
+    make_plots(student_scores,nstudents,student_info,assignment_summary,questions)
+#for student in student_responses:
+
+ #   if password is not None:
+  #       email_grade_summaries_plots(student_email,my_email_address,email_subject,output,'student0.png',password,isHTML=True)
+
+
 # Loop over each student.
 for i,student in enumerate(student_responses):
     total=0 # Total points the student received.
@@ -99,13 +122,15 @@ for i,student in enumerate(student_responses):
     student_email=student[0]
     #student_email="se30maha@siena.edu"
     time = student[1]
+    student_name = student[2]
 
     print "Grading scores for %s" % (student_email)
 
     # Create an empty string for the email body we will send to the student.
     output = ""
+    output += "<center> <b> This test is intended for %s </b> </center>" % (student_name)
 
-    for question_number,(response,solution,question,fe,fw) in enumerate(zip(student[2],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers)):
+    for question_number,(response,solution,question,fe,fw) in enumerate(zip(student[3],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers)):
         # Grade an individual problem
         sub_output,points_received,points_possible=grade_problem(question,response,solution,points_per_question,fe,fw) 
         # Keep track of how many points the student got for each problem.
@@ -128,13 +153,15 @@ for i,student in enumerate(student_responses):
     # Append a string which summarizes their performance. 
     output += "<center> <br> <br> <b> Grade: %6.3f out of %d ----- %4.2f </b> </center>" % (total,total_possible,100*(total/float(total_possible)))
     
-    scores_file.writerow([str(time) + '----------'+ student_email+'----------'+ str(this_student_score)])
+    #Writes info to the file that keeps students scores.
+    scores_file.writerow([time,student_email,student_name,this_student_score])
+    
 
     ###########################################################################
     # Email the student the feedback.
     ###########################################################################
     if password is not None:
-         email_grade_summaries(student_email,my_email_address,'Brownie and cookie physics test',output,password,isHTML=True)
+         email_grade_summaries(student_email,my_email_address,email_subject,output,password,isHTML=True)
 
 
 ###############################################################################
@@ -143,64 +170,6 @@ for i,student in enumerate(student_responses):
 # the number of students. Each student has a different graph depending on what 
 # their score is. Also, sorts the scores.
 ###############################################################################
-
-if make_plots:
-
-    student_scores=sorted(student_scores)
-
-    average=sum(student_scores)/float(len(student_scores))
-    student_info= sorted(student_info.items(),key=lambda x:x[1])
-    num_of_students = np.arange(0,nstudents,1)
-
-    print num_of_students
-
-
-    for i,student in enumerate(student_info):
-        print i,student,student_info
-        #print num_of_students
-	#print student_scores
-        plt.figure()
-        student_plot=plt.scatter(num_of_students,student_scores,color='b',marker='^',s=300,label='Individual student scores')
-        average_plot=plt.plot([0,nstudents],[average,average],'r--',label='Average score')
-        current_score = plt.scatter(i,student[1],color='g',marker='o',s=600,label='Your score')
-        plt.yticks(np.arange(0,100,5))
-        plt.xticks(np.arange(0,nstudents,1))
-        plt.xlim(-1,nstudents+1)
-        plt.legend(loc='lower left')
-        plt.title('Summary of Class Scores')
-        plt.xlabel('Student')
-        plt.ylabel('Score')
-
-
-###############################################################################
-# Summarize the student responses and how the class performed on each
-# question and plot the summary of each student.
-###############################################################################
-
-    colors=['lightskyblue','lightcoral']
-    labels=[r'Right',r'Wrong']
-    question_label=[]
-
-    num_of_students=0
-    for q,question in zip(assignment_summary.transpose(),questions):
-        ntot = len(q)
-        ncorrect = q.sum()
-        print "Out of %d people %d got this question right---- %4.2f%%" % (ntot,ncorrect,100*ncorrect/ntot)
-        question_num = 'Question #' + str(num_of_students+1)
-        question_label.append(question_num)
-        the_grid=GridSpec(7,1)
-        sizes=[ncorrect,ntot-ncorrect]
-        plt.subplot(the_grid[num_of_students,0],aspect=1)
-        patches, texts = plt.pie(sizes,colors=colors,shadow=True)
-        plt.axis('equal')
-        plt.tight_layout()
-        num_of_students+=1
-        plt.title(question_num,fontweight='bold')
-        plt.text(1.5,0.1,'%4.1f%% of students got this question right' % (100*ncorrect/ntot))
-    plt.legend(patches,labels,loc=('lower left'),shadow=True)
-    
-
-    plt.show()
 
 
 

@@ -46,7 +46,7 @@ def main():
     print solutions_string
     print extra_feedback_string
     print incorrect_feedback_string
-    outfile_name = 'solutions.py'
+    outfile_name = args.outfile_name
     outfile = open(outfile_name,'w+')
     outfile.write(solutions_string)
     outfile.write("\n")
