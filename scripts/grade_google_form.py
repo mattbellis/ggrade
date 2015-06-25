@@ -15,8 +15,9 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('infilename',type=str,default=None,help='Input file name',nargs='?')
-parser.add_argument('--email',action='store_true',dest='send_emails',default=False,help='Call --email if you want emails to be sent')
+parser.add_argument('--emails',action='store_true',dest='send_emails',default=False,help='Call --email if you want emails to be sent')
 parser.add_argument('--plots',action='store_true',dest='make_plots_bool',default=False,help='Call --plots if you want plots to be made')
+parser.add_argument('--emailplots',action='store_true',dest='email_and_plots',default=False,help='Call --plots if you want plots to be made')
 parser.add_argument('--solutions-file',dest='solutions_filename',type=str,default='solutions.py',help='Name of the file that has the solutions/feedback')
 parser.add_argument('--score_file',dest='student_score_file',type=str,default='student_scores.csv',help='Name of the file that will organize the students email and score.')
 #parser.add_argument('--email_subject',dest='email_subject',type=str,default='Your quiz feedback',help='If you want an email to be sent, use this to personalize the subject of the email.')
@@ -24,6 +25,7 @@ args=parser.parse_args()
 
 send_emails=args.send_emails
 make_plots_bool=args.make_plots_bool
+email_and_plots=args.email_and_plots
 
 ###############################################################################
 # Read in the file with the student responses. 
@@ -37,8 +39,7 @@ questions,solutions,student_responses=read_tab_file(args.infilename)
 # and feedback.
 ###############################################################################
 
-solutions_filename = args.solutions_filename.strip('.py')
-#solutions_filename = 'solutions' 
+solutions_filename = args.solutions_filename.strip('.py') 
 
 solutions_file = __import__(solutions_filename)
 
@@ -55,7 +56,7 @@ feedback_for_wrong_answers = getattr(solutions_file,'feedback_for_wrong_answers'
 my_email_address = None
 password = None
 
-if send_emails:
+if send_emails or email_and_plots:
     my_email_address = getpass.getpass("Enter address from which to send email: ")
     password = getpass.getpass()
     email_subject=input("What do you want your email subject line to say?")
@@ -89,6 +90,7 @@ for i,student in enumerate(student_responses):
     student_name=student[2]
     print "Grading scores for %s" % (student_email)
     output = ""
+    output += "<center> <b> This test is intended for %s </b> </center>" % (student_name)
     for question_number,(response,solution,question,fe,fw) in enumerate(zip(student[3],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers)):
         sub_output,points_received,points_possible=grade_problem(question,response,solution,points_per_question,fe,fw) 
         if points_possible != points_received: 
@@ -99,14 +101,27 @@ for i,student in enumerate(student_responses):
     this_student_score = round((total/float(total_possible))*100,2)
     student_scores.append(this_student_score) 
     student_info[student_email]= (this_student_score)
+    output += "<center> <br> <br> <b> Grade: %6.3f out of %d ----- %4.2f </b> </center>" % (total,total_possible,100*(total/float(total_possible)))
+    if email_and_plots:
+    	print "email subject %s" % (email_subject)
+        image_path ='/home/sara/ggrade/scripts/student%d.png' % (i) 
+        print i
+        print image_path
+
+    	if password is not None:
+         	email_grade_summaries_plots(student_email,my_email_address,email_subject,output,image_path,password,isHTML=True)
+
+
 
 if make_plots_bool:
     make_plots(student_scores,nstudents,student_info,assignment_summary,questions)
-#for student in student_responses:
+'''if email_and_plots:
+	for i,student in enumerate(student_responses):
+                print "email subject %s" % (email_subject)
 
- #   if password is not None:
-  #       email_grade_summaries_plots(student_email,my_email_address,email_subject,output,'student0.png',password,isHTML=True)
-
+    		if password is not None:
+         		email_grade_summaries_plots(student_email,my_email_address,email_subject,output,'/home/sara/ggrade/scripts/student0.png',password,isHTML=True)
+'''
 
 # Loop over each student.
 for i,student in enumerate(student_responses):
@@ -157,7 +172,7 @@ for i,student in enumerate(student_responses):
     ###########################################################################
     # Email the student the feedback.
     ###########################################################################
-    if password is not None:
+    if password is not None and send_emails:
          email_grade_summaries(student_email,my_email_address,email_subject,output,password,isHTML=True)
 
 

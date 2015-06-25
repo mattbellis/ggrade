@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 import os
 
 
@@ -81,16 +82,20 @@ def email_grade_summaries_plots(email_address,msg_from,msg_subject,msg_body,imag
     smtpuser = msg_from  # for SMTP AUTH, set SMTP username here
     smtppasswd = password  # for SMTP AUTH, set SMTP password here
     me = msg_from
-    attach = image_file_name
     
     # Create a text/plain message
-    msg = MIMEText(msg_body)
+    msg = MIMEMultipart()
+    msgAlternative = MIMEMultipart('alternative')
+    msg.attach(msgAlternative)
     if isHTML:
-        msg = MIMEText(msg_body,'html')
+        msgtext = MIMEText(msg_body,'html')
+        msgAlternative.attach(msgtext)
 
-    img_data = open(image_file_name,'rb').read()
-    image = MIMEImage(img_data,name=os.path.basename(image_file_name))
+    img_data = open(image_file_name,'rb')
+    image = MIMEImage(img_data.read())
+    image.add_header('Content-ID','<image1>')
     msg.attach(image)
+    img_data.close()
 
     msg['Subject'] = '%s' % (msg_subject)
     msg['From'] = me
