@@ -131,19 +131,13 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
             nsolutions = float(len(multiple_solutions))
             points_per_answer = points_per_question/nsolutions
             sub_points = 0
-            print '**********************************************************'
 
-            print solution
-            print answer
-            #print multiple_answers
-            #print multiple_solutions
 
             # Check to see if they got all the answers.
             for msol in multiple_solutions:
                 for mans in multiple_answers:
                     if msol.strip()==mans.strip():
                         sub_points += points_per_answer
-                        print sub_points
                     
             '''# Check to see if someone entered something wrong
             for mans in multiple_answers:
@@ -158,13 +152,10 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
 
             if int(sub_points)==points_per_question:
                 correct = 1 # Got them all!
-                print "All"
             elif int(sub_points)<=0:
                 correct = -1 # Got none or less than none! Yikes!
-                print "None"
             else:
                 correct = 0 # Got some.
-                print "Partial"
 
         elif solution.isdigit() or is_float(solution): #check to see if the answer is a number and if it is in the range
             if answer.isdigit() or is_float(answer):
@@ -208,7 +199,6 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
         iscorrect = 'Incorrect.'
         extra_text = "  <b>The correct answer is:  &emsp;%s </center> </b>" % (solution)
     elif correct==0:
-        print "partial"
         color = 'green'
         iscorrect = 'Partially correct.'  
         if extra_partial_answer is not "":
@@ -256,7 +246,6 @@ def read_tab_file(file_name): #reading a tab file once downloaded from Google Fo
               student[3] = phrase[3:] # Their answers
               student_answers.append(student)
           linecount+=1   
-    #print student
 
     return questions,solutions,student_answers
 
@@ -267,8 +256,6 @@ def make_plots(student_scores,nstudents,student_info,assignment_summary,question
     average=sum(student_scores)/float(len(student_scores))
     student_info= sorted(student_info.items(),key=lambda x:x[1])
     num_of_students = np.arange(0,nstudents,1)
-
-    print num_of_students
 
     for i,student in enumerate(student_info):
         fig=plt.figure()
@@ -300,7 +287,7 @@ def make_plots(student_scores,nstudents,student_info,assignment_summary,question
         print "Out of %d people %d got this question right---- %4.2f%%" % (ntot,ncorrect,100*ncorrect/ntot)
         question_num = 'Question #' + str(num_of_students+1)
         question_label.append(question_num)
-        the_grid=GridSpec(7,1)
+        the_grid=GridSpec(len(questions),1)
         sizes=[ncorrect,ntot-ncorrect]
         plt.subplot(the_grid[num_of_students,0],aspect=1)
         patches, texts = plt.pie(sizes,colors=colors,shadow=True)

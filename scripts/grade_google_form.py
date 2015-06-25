@@ -46,9 +46,6 @@ solutions = getattr(solutions_file,'solutions')
 feedback_for_everyone = getattr(solutions_file,'feedback_for_everyone')
 feedback_for_wrong_answers = getattr(solutions_file,'feedback_for_wrong_answers')
 
-print solutions
-print feedback_for_everyone
-print feedback_for_wrong_answers
 
 ###############################################################################
 # If "emails" and entered into the command line, it will prompt the user for 

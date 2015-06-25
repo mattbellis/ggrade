@@ -44,9 +44,6 @@ def main():
     incorrect_feedback_string += "] \n"
 
     # Write the output to a file.
-    print solutions_string
-    print extra_feedback_string
-    print incorrect_feedback_string
     
     outfile_name = args.outfile_name
     outfile = open(outfile_name,'w+')
