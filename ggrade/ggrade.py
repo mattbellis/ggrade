@@ -131,9 +131,10 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
             nsolutions = float(len(multiple_solutions))
             points_per_answer = points_per_question/nsolutions
             sub_points = 0
+            print '**********************************************************'
 
-            #print solution
-            #print answer
+            print solution
+            print answer
             #print multiple_answers
             #print multiple_solutions
 
@@ -142,10 +143,9 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
                 for mans in multiple_answers:
                     if msol.strip()==mans.strip():
                         sub_points += points_per_answer
-                        #print sub_points
+                        print sub_points
                     
-            #exit()
-            # Check to see if someone entered something wrong
+            '''# Check to see if someone entered something wrong
             for mans in multiple_answers:
                 found_a_match = False
                 for msol in multiple_solutions:
@@ -154,18 +154,22 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
                 if found_a_match is False:
                     sub_points -= points_per_answer
                     partial_answer = mans
+            '''
+
             if int(sub_points)==points_per_question:
                 correct = 1 # Got them all!
+                print "All"
             elif int(sub_points)<=0:
                 correct = -1 # Got none or less than none! Yikes!
+                print "None"
             else:
                 correct = 0 # Got some.
+                print "Partial"
 
         elif solution.isdigit() or is_float(solution): #check to see if the answer is a number and if it is in the range
             if answer.isdigit() or is_float(answer):
                 fraction_difference = (float(answer) - float(solution))/(float(solution)+.00000000001)
                 within_tolerance = np.abs(fraction_difference)<0.05
-                #print answer,within_tolerance
                 if within_tolerance:
                     correct=1
                 else:
@@ -174,7 +178,6 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
                 temp_answer = float(is_number_in_string(answer))
                 fraction_difference = (float(temp_answer) - float(solution))/(float(solution)+.00000000001)
                 within_tolerance = np.abs(fraction_difference)<0.05
-                #print temp_answer,within_tolerance
                 if within_tolerance:
                     correct=1
                 else:
@@ -205,6 +208,7 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
         iscorrect = 'Incorrect.'
         extra_text = "  <b>The correct answer is:  &emsp;%s </center> </b>" % (solution)
     elif correct==0:
+        print "partial"
         color = 'green'
         iscorrect = 'Partially correct.'  
         if extra_partial_answer is not "":
@@ -246,7 +250,7 @@ def read_tab_file(file_name): #reading a tab file once downloaded from Google Fo
           elif linecount==1:
               solutions=phrase[3:]
           else:
-              student[0] = phrase[1] # Name
+              student[0] = phrase[1] # Email
               student[1] = phrase[0] # Time stamp
               student[2] = phrase[2] # Student's name
               student[3] = phrase[3:] # Their answers
