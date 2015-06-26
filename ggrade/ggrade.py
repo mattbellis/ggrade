@@ -182,8 +182,11 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
             else:
                 correct = -1
         # This is not a list but it is also not multiple possible answers. 
-        elif answer.strip()==solution.strip() or solution==None or solution =='' or solution.lower() in answer.lower() or solution=='essay': 
+        elif answer.strip()==solution.strip() or solution==None or solution =='' or solution.lower() in answer.lower(): 
             correct=1
+        elif solution=='essay':
+		correct =1
+		
         
     # If it is a list, then we will explicitly loop over the options.
     else:
