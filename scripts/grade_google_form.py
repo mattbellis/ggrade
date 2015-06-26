@@ -20,7 +20,6 @@ parser.add_argument('--plots',action='store_true',dest='make_plots_bool',default
 parser.add_argument('--emailplots',action='store_true',dest='email_and_plots',default=False,help='Call --plots if you want plots to be made')
 parser.add_argument('--solutions-file',dest='solutions_filename',type=str,default='solutions.py',help='Name of the file that has the solutions/feedback')
 parser.add_argument('--score_file',dest='student_score_file',type=str,default='student_scores.csv',help='Name of the file that will organize the students email and score.')
-#parser.add_argument('--email_subject',dest='email_subject',type=str,default='Your quiz feedback',help='If you want an email to be sent, use this to personalize the subject of the email.')
 args=parser.parse_args()
 
 send_emails=args.send_emails
@@ -91,6 +90,7 @@ for i,student in enumerate(student_responses):
     print "Grading scores for %s" % (student_email)
     output = ""
     output += "<center> <b> This test is intended for %s </b> </center>" % (student_name)
+
     for question_number,(response,solution,question,fe,fw) in enumerate(zip(student[3],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers)):
         sub_output,points_received,points_possible=grade_problem(question,response,solution,points_per_question,fe,fw) 
         if points_possible != points_received: 
@@ -102,26 +102,15 @@ for i,student in enumerate(student_responses):
     student_scores.append(this_student_score) 
     student_info[student_email]= (this_student_score)
     output += "<center> <br> <br> <b> Grade: %6.3f out of %d ----- %4.2f </b> </center>" % (total,total_possible,100*(total/float(total_possible)))
+
     if email_and_plots:
-    	print "email subject %s" % (email_subject)
         image_path ='/home/sara/ggrade/scripts/student%d.png' % (i) 
-        print i
-        print image_path
 
     	if password is not None:
          	email_grade_summaries_plots(student_email,my_email_address,email_subject,output,image_path,password,isHTML=True)
 
-
-
 if make_plots_bool:
     make_plots(student_scores,nstudents,student_info,assignment_summary,questions)
-'''if email_and_plots:
-	for i,student in enumerate(student_responses):
-                print "email subject %s" % (email_subject)
-
-    		if password is not None:
-         		email_grade_summaries_plots(student_email,my_email_address,email_subject,output,'/home/sara/ggrade/scripts/student0.png',password,isHTML=True)
-'''
 
 # Loop over each student.
 for i,student in enumerate(student_responses):
@@ -132,7 +121,6 @@ for i,student in enumerate(student_responses):
     # work- if username is automatically grabbed from Google Forms.
     
     student_email=student[0]
-    #student_email="se30maha@siena.edu"
     time = student[1]
     student_name = student[2]
 
@@ -176,12 +164,7 @@ for i,student in enumerate(student_responses):
          email_grade_summaries(student_email,my_email_address,email_subject,output,password,isHTML=True)
 
 
-###############################################################################
-# Plots each student's score on one figure. It then loops through each students
-# scores and plots the current student's score. So the number of figures equals 
-# the number of students. Each student has a different graph depending on what 
-# their score is. Also, sorts the scores.
-###############################################################################
+
 
 
 

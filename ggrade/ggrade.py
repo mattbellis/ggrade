@@ -143,8 +143,9 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
                 for mans in multiple_answers:
                     if msol.strip()==mans.strip():
                         sub_points += points_per_answer
-                    
-            '''# Check to see if someone entered something wrong
+
+	    # Takes points off if student checked a wrong answer.                    
+            '''# Check to see if someone entered something wrong 
             for mans in multiple_answers:
                 found_a_match = False
                 for msol in multiple_solutions:
@@ -189,7 +190,6 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
         for s in solution:
             if answer==s:
                 correct=1
-
 
     output += """<p style= \"text-align:center \"  >*************************************************************************************************** </p>"""
     
@@ -248,13 +248,20 @@ def read_tab_file(file_name): #reading a tab file once downloaded from Google Fo
               student[0] = phrase[1] # Email
               student[1] = phrase[0] # Time stamp
               student[2] = phrase[2] # Student's name
-              student[3] = phrase[3:] # Their answers
+              student[3] = phrase[3:] # The student's answers
               student_answers.append(student)
           linecount+=1   
 
     return questions,solutions,student_answers
 
 def make_plots(student_scores,nstudents,student_info,assignment_summary,questions):
+
+###############################################################################
+# Plots each student's score on one figure. It then loops through each students
+# scores and plots the current student's score. So the number of figures equals 
+# the number of students. Each student has a different graph depending on what 
+# their score is. Also, sorts the scores.
+###############################################################################
 
     student_scores=sorted(student_scores)
 
