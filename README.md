@@ -15,6 +15,7 @@ Successes!
 Partial successes
 * Ranked questions can be done, but only with binary comparisons (is A bigger/smaller than B?, for example). 
 * Essay questions cannot be automatically graded, but we are planning on adding a feature to dump the answers to a text/PDF file for later printing and grading by the instructor. 
+** We have explored the idea of searching in short answer or essay questions for words or phrases, and computationally, we've been able to make this work. However, the challenge still remains for the instructor to search for the full range of possible correct responses.
 
 Limitations
 * There is no way to have students sketch a figure or label a figure using Google Forms. Though the instructor could have an image where different sections are labeled with A,B,C, etc., and the student must then identify those sections.
