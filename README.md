@@ -29,13 +29,17 @@ Feel free to contact us with comments and suggestions!
 
 
 # Installation instructions.
+If you're familiar with git/Github and Python packages, you can clone/fork this repository and then from the ggrade directory type
+
+  sudo python setup.py install
+
 [How to install the ggrade package](https://docs.google.com/presentation/d/1HF6IzTF4_QTbtqSXEil2KNgKmdbUUwM-5pxwu9fuX5I/edit?usp=sharing)
 
 # How to use ggrade
 
 * [How to create a quiz with Google Forms](https://docs.google.com/presentation/d/1y54EqQW6B33ZHKnn8fERqpVAjA4WE-moT8rkddE6GX8/edit?usp=sharing)
 * [Assigning the quiz and creating the solutions key](https://docs.google.com/presentation/d/1B8XK8vX93PIWcP7S3MGeHZfwQtK9TXiPiSh50PnTJv8/edit?usp=sharing)
-* Downloading the student responses and adding additional feedback
+* [Downloading the student responses and adding additional feedback](https://docs.google.com/presentation/d/1nMqCg26xaxgn4N8zpg9_srxVyxpNBavNxOMx3XSW2A4/edit?usp=sharing)
 * Grading the quizzes, emailing the students, and creating summary plots
 
 
