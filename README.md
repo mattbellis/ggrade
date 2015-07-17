@@ -41,6 +41,6 @@ More detailed instructions can be found at
 * [How to create a quiz with Google Forms](https://docs.google.com/presentation/d/1y54EqQW6B33ZHKnn8fERqpVAjA4WE-moT8rkddE6GX8/edit?usp=sharing)
 * [Assigning the quiz and creating the solutions key](https://docs.google.com/presentation/d/1B8XK8vX93PIWcP7S3MGeHZfwQtK9TXiPiSh50PnTJv8/edit?usp=sharing)
 * [Downloading the student responses and adding additional feedback](https://docs.google.com/presentation/d/1nMqCg26xaxgn4N8zpg9_srxVyxpNBavNxOMx3XSW2A4/edit?usp=sharing)
-* Grading the quizzes, emailing the students, and creating summary plots
+* [Grading the quizzes, emailing the students, and creating summary plots](https://docs.google.com/presentation/d/1qM8dA9d7x3Mj6mlpatx0wOBEHIqm48siSz1qJqS70AQ/edit?usp=sharing)
 
 
