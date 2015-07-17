@@ -33,6 +33,7 @@ If you're familiar with git/Github and Python packages, you can clone/fork this 
 
     sudo python setup.py install
 
+More detailed instructions can be found at
 [How to install the ggrade package](https://docs.google.com/presentation/d/1HF6IzTF4_QTbtqSXEil2KNgKmdbUUwM-5pxwu9fuX5I/edit?usp=sharing)
 
 # How to use ggrade
