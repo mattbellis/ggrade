@@ -10,6 +10,7 @@ And this is how it is viewed by a student (the theme/background can be changed):
 ![Sample Google Form viewed as a "Live Form"](https://github.com/mattbellis/ggrade/blob/master/images/SampleTestScreenshotLiveForm2.png)
 
 This is what the response file looks like once the students take the quiz.
+Check out this link to view this example response file: https://docs.google.com/spreadsheets/d/1ggszt6rSKhnqzcifl6cQlyRTMSWp4H6EPvE3wgLujyE/edit?usp=sharing
 
 ![This is what the response file looks like once the students take the quiz.](https://github.com/mattbellis/ggrade/blob/master/images/SampleTestResponses.png)
 
