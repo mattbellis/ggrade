@@ -23,8 +23,6 @@ parser.add_argument('--score_file',dest='student_score_file',type=str,default='s
 parser.add_argument('--essay_file',dest='essay_file_name',type=str,default='essay.tex',help='If there is an essay that needs to be written to a file, type the name of the file you want created for the essays/long answers to be graded by hand.')
 args=parser.parse_args()
 
-
-
 send_emails=args.send_emails
 make_plots_bool=args.make_plots_bool
 email_and_plots=args.email_and_plots
@@ -42,7 +40,6 @@ questions,solutions,student_responses=read_tab_file(args.infilename)
 ###############################################################################
 
 solutions_filename = args.solutions_filename.strip('.py') 
-
 solutions_file = __import__(solutions_filename)
 
 solutions = getattr(solutions_file,'solutions')
@@ -78,7 +75,6 @@ nstudents = len(student_responses)
 nquestions = len(questions)
 student_scores=[]
 student_info={}
-
 print "# of students:  %d" % (nstudents)
 print "# of questions: %d" % (nquestions)
 
@@ -115,6 +111,7 @@ for i,student in enumerate(student_responses):
     student_info[student_email]= (this_student_score)
     output += "<center> <br> <br> <b> Grade: %6.3f out of %d ----- %4.2f </b> </center>" % (total,total_possible,100*(total/float(total_possible)))
 
+    # Emailing the plots- not in the right order.
     if email_and_plots:
         image_path ='/home/sara/ggrade/scripts/student%d.png' % (i+1) 
 
@@ -137,8 +134,6 @@ for i,student in enumerate(student_responses):
     time = student[1]
     student_name = student[2]
 
-    #print "Grading scores for %s" % (student_email)
-
     # Create an empty string for the email body we will send to the student.
     output = ""
     output += "<center> <b> This test is intended for %s </b> </center>" % (student_name)
@@ -146,6 +141,7 @@ for i,student in enumerate(student_responses):
     for question_number,(response,solution,question,fe,fw,points_per_question) in enumerate(zip(student[3],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers,points_per_question_list)):
         # Grade an individual problem
         sub_output,points_received,points_possible,essay_output=grade_problem(question,response,solution,points_per_question,student_name,fe,fw) 
+
         # Keep track of how many points the student got for each problem.
         # If the student didn't get all the possible points, change the 1 in the matrix to a 0.
         if points_possible != points_received: 
@@ -168,9 +164,7 @@ for i,student in enumerate(student_responses):
     
     #Writes info to the file that keeps students scores.
     scores_file.writerow([time,student_email,student_name,this_student_score])
-    ###########################################################################
-    # Writing out approproate information for LaTex file
-    ###########################################################################
+
     
         
     ###########################################################################
@@ -180,7 +174,9 @@ for i,student in enumerate(student_responses):
          email_grade_summaries(student_email,my_email_address,email_subject,output,password,isHTML=True)
 
 
-
+##########################################################################
+# Writing out approproate information for LaTex file
+##########################################################################
 essay_file.write("%s \end{document}" % (essay_string))
 essay_file.close()
 
