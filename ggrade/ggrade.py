@@ -23,9 +23,6 @@ def is_float(value):
         return False
 
 ################################################################################
-
-
-################################################################################
 # Test to see if a string contains a number
 ################################################################################
 def is_number_in_string(value):
@@ -36,7 +33,6 @@ def is_number_in_string(value):
             newstring += letter
 
     return newstring
-
 
 ################################################################################
 def email_grade_summaries(email_address,msg_from,msg_subject,msg_body,password="xxx",isHTML=False):
@@ -71,8 +67,6 @@ def email_grade_summaries(email_address,msg_from,msg_subject,msg_body,password="
         print "Error: unable to send email"
 
 ################################################################################
-
-
 def email_grade_summaries_plots(email_address,msg_from,msg_subject,msg_body,image_file_name,password="xxx",isHTML=False):
 
     ################################################################################
@@ -128,8 +122,6 @@ def grade_problem(question,answer,solution,points_per_question,student_name,feed
     essay_output = ""
     
     
-  
-    
     if type(solution) is not list: #check for solution to not be a list 
 
         # If it is a multiple choice answer and there can be multiple solutions.
@@ -166,7 +158,7 @@ def grade_problem(question,answer,solution,points_per_question,student_name,feed
             else:
                 correct = 0 # Got some.
 
-        elif solution.isdigit() or is_float(solution): #check to see if the answer is a number and if it is in the range
+        elif solution.isdigit() or is_float(solution): # Check to see if the answer is a number and if it is in the range.
             if answer.isdigit() or is_float(answer):
                 fraction_difference = (float(answer) - float(solution))/(float(solution)+.00000000001)
                 within_tolerance = np.abs(fraction_difference)<0.05
@@ -209,8 +201,8 @@ def grade_problem(question,answer,solution,points_per_question,student_name,feed
     extra_text = ""
 
     if correct==1:
-        points_received = points_per_question #get all points
-    elif correct==-1: #no points received
+        points_received = points_per_question # Get all points.
+    elif correct==-1: # No points received.
         color = 'red'
         iscorrect = 'Incorrect.'
         extra_text = "  <b>The correct answer is:  &emsp;%s </center> </b>" % (solution)
