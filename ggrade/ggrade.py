@@ -70,7 +70,9 @@ def email_grade_summaries(email_address,msg_from,msg_subject,msg_body,password="
 def email_grade_summaries_plots(email_address,msg_from,msg_subject,msg_body,image_file_name,password="xxx",isHTML=False):
 
     ################################################################################
-    # Use my GMail account
+    # Use my GMail account - the image file is not lined up correctly. The plot is 
+    # sorted by the score of the student while the email address is sorted by the 
+    # time each student took the test. This needs to be fixed before emailing plots.
     ################################################################################
     smtpserver = 'smtp.gmail.com'
     smtpuser = msg_from  # for SMTP AUTH, set SMTP username here
