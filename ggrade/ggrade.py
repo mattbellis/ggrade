@@ -117,8 +117,7 @@ def email_grade_summaries_plots(email_address,msg_from,msg_subject,msg_body,imag
 ################################################################################
 # Grade an individual problem.
 ################################################################################
-def grade_problem(question,answer,solution,points_per_question,feedback_for_everyone=None,feedback_for_wrong_answers=None):
-
+def grade_problem(question,answer,solution,points_per_question,student_name,feedback_for_everyone=None,feedback_for_wrong_answers=None):
     sub_points = 0
     correct = -1
     points_per_question=points_per_question
@@ -126,6 +125,10 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
     points_received = 0
     extra_partial_answer=""
     missing_partial_answer=""
+    essay_output = ""
+    
+    
+  
     
     if type(solution) is not list: #check for solution to not be a list 
 
@@ -144,7 +147,7 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
                     if msol.strip()==mans.strip():
                         sub_points += points_per_answer
 
-	    # Takes points off if student checked a wrong answer.                    
+	    # Takes points off if student checked a wrong answer - uncomment to utilize this.                    
             '''# Check to see if someone entered something wrong 
             for mans in multiple_answers:
                 found_a_match = False
@@ -187,6 +190,11 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
         elif solution=='essay':
 		correct =1
 		
+                essay_output += "\n\\newpage \n{\large \\bf %s}\\\ \n" % (student_name)
+                essay_output += "\\\ Question: %s \n \\\ " % (question) 
+    		essay_output += "\\\ Answer: %s\n" % (answer)
+                
+		
         
     # If it is a list, then we will explicitly loop over the options.
     else:
@@ -226,7 +234,7 @@ def grade_problem(question,answer,solution,points_per_question,feedback_for_ever
 
     output += "<center> <font color = \"%s\" > <h1> %s </h1> </font> %s<br> <br>  You answered:   &emsp;  %s <br>  %s" % (color,iscorrect,question,answer,extra_text)
 
-    return output,points_received,points_per_question
+    return output,points_received,points_per_question,essay_output
 
 
 ################################################################################
@@ -276,15 +284,15 @@ def make_plots(student_scores,nstudents,student_info,assignment_summary,question
         fig=plt.figure()
         student_plot=plt.scatter(num_of_students,student_scores,color='b',marker='^',s=300,label='Individual student scores')
         average_plot=plt.plot([0,nstudents],[average,average],'r--',label='Average score')
-        current_score = plt.scatter(i,student[1],color='g',marker='o',s=600,label='Your score')
+        current_score = plt.scatter(i+1,student[1],color='g',marker='o',s=600,label='Your score')
         plt.yticks(np.arange(0,100,5))
-        plt.xticks(np.arange(0,nstudents,1))
+        plt.xticks(np.arange(1,nstudents+1,1))
         plt.xlim(-1,nstudents+1)
         plt.legend(loc='lower left')
         plt.title('Summary of Class Scores')
         plt.xlabel('Student')
         plt.ylabel('Score')
-        fig.savefig('student'+ str(i) + '.png')
+        fig.savefig('student'+ str(i+1) + '.png')
 
 ###############################################################################
 # Summarize the student responses and how the class performed on each
