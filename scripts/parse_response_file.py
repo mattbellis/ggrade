@@ -22,6 +22,7 @@ def main():
     solutions_string = "solutions = [ \n"
     extra_feedback_string = "feedback_for_everyone = [ \n"
     incorrect_feedback_string = "feedback_for_wrong_answers = [ \n"
+    points_per_question_string = "points_per_question = [ \n"
 
     nsolutions = len(solutions)
 
@@ -30,18 +31,22 @@ def main():
         solutions_string += "\t\"%s\"" % (solution)
         extra_feedback_string += "\tNone" 
         incorrect_feedback_string += "\tNone" 
+        points_per_question_string += "10"
         if i != nsolutions-1:
             solutions_string += ", # Question %d\n" % (i+1)
             extra_feedback_string += ", # Question %d\n" % (i+1)
             incorrect_feedback_string += ", # Question %d\n" % (i+1)
+            points_per_question_string += ", # Question %d\n" % (i+1)
         else:
             solutions_string += " # Question %d \n" % (i+1)
             extra_feedback_string += " # Question %d \n" % (i+1)
             incorrect_feedback_string += " # Question %d \n" % (i+1)
+            points_per_question_string += " # Question %d \n" % (i+1)
 
     solutions_string += "] \n"
     extra_feedback_string += "] \n"
     incorrect_feedback_string += "] \n"
+    points_per_question_string += "] \n"
 
     # Write the output to a file.
     
@@ -54,6 +59,8 @@ def main():
     outfile.write(extra_feedback_string)
     outfile.write("\n")
     outfile.write(incorrect_feedback_string)
+    outfile.write("\n")
+    outfile.write(points_per_question_string)
     outfile.close()
 
 ################################################################################

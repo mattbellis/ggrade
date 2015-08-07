@@ -20,7 +20,10 @@ parser.add_argument('--plots',action='store_true',dest='make_plots_bool',default
 parser.add_argument('--emailplots',action='store_true',dest='email_and_plots',default=False,help='Call --plots if you want plots to be made')
 parser.add_argument('--solutions-file',dest='solutions_filename',type=str,default='solutions.py',help='Name of the file that has the solutions/feedback')
 parser.add_argument('--score_file',dest='student_score_file',type=str,default='student_scores.csv',help='Name of the file that will organize the students email and score.')
+parser.add_argument('--essay_file',dest='essay_file_name',type=str,default='essay.tex',help='If there is an essay that needs to be written to a file, type the name of the file you want created for the essays/long answers to be graded by hand.')
 args=parser.parse_args()
+
+
 
 send_emails=args.send_emails
 make_plots_bool=args.make_plots_bool
@@ -45,6 +48,13 @@ solutions_file = __import__(solutions_filename)
 solutions = getattr(solutions_file,'solutions')
 feedback_for_everyone = getattr(solutions_file,'feedback_for_everyone')
 feedback_for_wrong_answers = getattr(solutions_file,'feedback_for_wrong_answers')
+points_per_question_list = getattr(solutions_file, 'points_per_question')
+
+
+# Opening file for essay answers as a LaTex file.
+essay_file_name = args.essay_file_name
+essay_file = open(essay_file_name,"w")
+essay_file.write('\documentclass[12pt]{article} \n\usepackage{amsmath} \n\\begin{document}')
 
 
 ###############################################################################
@@ -63,7 +73,7 @@ if send_emails or email_and_plots:
 scores_file = csv.writer(open(args.student_score_file, "wb"),delimiter=',')
 scores_file.writerow(['Date/Time','Student Email','Student Name','Student Score'])
 
-points_per_question=10
+#points_per_question=10
 
 nstudents = len(student_responses)
 nquestions = len(questions)
@@ -79,20 +89,25 @@ print "# of questions: %d" % (nquestions)
 # correct.
 ###############################################################################
 assignment_summary = np.ones((nstudents,nquestions)) 
+essay_string = ""
 
 for i,student in enumerate(student_responses):
     total=0 
     total_possible=0 
     student_email=student[0]
-    #student_email="se30maha@siena.edu"
     time = student[1]
     student_name=student[2]
-    print "Grading scores for %s" % (student_email)
+    #print "Grading scores for %s" % (student_email)
     output = ""
     output += "<center> <b> This test is intended for %s </b> </center>" % (student_name)
+    
+    
 
-    for question_number,(response,solution,question,fe,fw) in enumerate(zip(student[3],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers)):
-        sub_output,points_received,points_possible=grade_problem(question,response,solution,points_per_question,fe,fw) 
+    for question_number,(response,solution,question,fe,fw,points_per_question) in enumerate(zip(student[3],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers,points_per_question_list)):
+        sub_output,points_received,points_possible,essay_output=grade_problem(question,response,solution,points_per_question,student_name,fe,fw) 
+        if essay_output is not "":
+                #essay_file.write(essay_output)
+                essay_string +=essay_output
         if points_possible != points_received: 
             assignment_summary[i][question_number]=0
         output += sub_output
@@ -104,13 +119,14 @@ for i,student in enumerate(student_responses):
     output += "<center> <br> <br> <b> Grade: %6.3f out of %d ----- %4.2f </b> </center>" % (total,total_possible,100*(total/float(total_possible)))
 
     if email_and_plots:
-        image_path ='/home/sara/ggrade/scripts/student%d.png' % (i) 
+        image_path ='/home/sara/ggrade/scripts/student%d.png' % (i+1) 
 
     	if password is not None:
          	email_grade_summaries_plots(student_email,my_email_address,email_subject,output,image_path,password,isHTML=True)
 
 if make_plots_bool:
     make_plots(student_scores,nstudents,student_info,assignment_summary,questions)
+print essay_string
 
 # Loop over each student.
 for i,student in enumerate(student_responses):
@@ -124,15 +140,15 @@ for i,student in enumerate(student_responses):
     time = student[1]
     student_name = student[2]
 
-    print "Grading scores for %s" % (student_email)
+    #print "Grading scores for %s" % (student_email)
 
     # Create an empty string for the email body we will send to the student.
     output = ""
     output += "<center> <b> This test is intended for %s </b> </center>" % (student_name)
 
-    for question_number,(response,solution,question,fe,fw) in enumerate(zip(student[3],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers)):
+    for question_number,(response,solution,question,fe,fw,points_per_question) in enumerate(zip(student[3],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers,points_per_question_list)):
         # Grade an individual problem
-        sub_output,points_received,points_possible=grade_problem(question,response,solution,points_per_question,fe,fw) 
+        sub_output,points_received,points_possible,essay_output=grade_problem(question,response,solution,points_per_question,student_name,fe,fw) 
         # Keep track of how many points the student got for each problem.
         # If the student didn't get all the possible points, change the 1 in the matrix to a 0.
         if points_possible != points_received: 
@@ -155,13 +171,21 @@ for i,student in enumerate(student_responses):
     
     #Writes info to the file that keeps students scores.
     scores_file.writerow([time,student_email,student_name,this_student_score])
+    ###########################################################################
+    # Writing out approproate information for LaTex file
+    ###########################################################################
     
-
+        
     ###########################################################################
     # Email the student the feedback.
     ###########################################################################
     if password is not None and send_emails:
          email_grade_summaries(student_email,my_email_address,email_subject,output,password,isHTML=True)
+
+
+
+essay_file.write("%s \end{document}" % (essay_string))
+essay_file.close()
 
 
 
