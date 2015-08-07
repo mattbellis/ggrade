@@ -12,3 +12,5 @@ And this is how it is viewed by a student (the theme/background can be changed):
 This is what the response file looks like once the students take the quiz.
 
 ![This is what the response file looks like once the students take the quiz.](https://github.com/mattbellis/ggrade/blob/master/images/SampleTestResponses.png)
+
+![This is what a sample email to a student would look like.](https://github.com/mattbellis/ggrade/blob/master/images/SampleTestEmail.png)
