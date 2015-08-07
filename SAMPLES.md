@@ -1,2 +1,2 @@
-![Wilson Hall](https://github.com/mattbellis/ggrade/blob/master/images/wilsonhall.jpg)
+![Sample Google Form for a Quiz](https://github.com/mattbellis/ggrade/blob/master/images/SampleTestScreenshot.png)
 
