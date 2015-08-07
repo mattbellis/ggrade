@@ -73,7 +73,6 @@ if send_emails or email_and_plots:
 scores_file = csv.writer(open(args.student_score_file, "wb"),delimiter=',')
 scores_file.writerow(['Date/Time','Student Email','Student Name','Student Score'])
 
-#points_per_question=10
 
 nstudents = len(student_responses)
 nquestions = len(questions)
@@ -97,7 +96,6 @@ for i,student in enumerate(student_responses):
     student_email=student[0]
     time = student[1]
     student_name=student[2]
-    #print "Grading scores for %s" % (student_email)
     output = ""
     output += "<center> <b> This test is intended for %s </b> </center>" % (student_name)
     
@@ -106,7 +104,6 @@ for i,student in enumerate(student_responses):
     for question_number,(response,solution,question,fe,fw,points_per_question) in enumerate(zip(student[3],solutions,questions,feedback_for_everyone,feedback_for_wrong_answers,points_per_question_list)):
         sub_output,points_received,points_possible,essay_output=grade_problem(question,response,solution,points_per_question,student_name,fe,fw) 
         if essay_output is not "":
-                #essay_file.write(essay_output)
                 essay_string +=essay_output
         if points_possible != points_received: 
             assignment_summary[i][question_number]=0
