@@ -3,7 +3,7 @@ Tools to grade the output of a Google Forms that was used for a quiz.
 
 This was a summer project at [Siena College](http://www.siena.edu) to bring flexible grading options to Google Forms. The primary authors are Matt Bellis and Sara Mahar. 
 
-Check out the SAMPLES.md file if you want to see a sample.
+Check out the [SAMPLES.md](https://github.com/mattbellis/ggrade/blob/master/SAMPLES.md) file if you want to see a sample.
 
 Google Forms, primarily used for polls and surveys, is also used by a number of instructors to assign quizzes and homeworks to students. We wanted to create a command-line tool for ``easy" and flexible grading. There are plugins available for Google Forms that can do this as well, like [Flubaroo](http://www.flubaroo.com/), but we wanted something that worked with Python and text files. 
 
