@@ -16,6 +16,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('infilename',type=str,default=None,help='Input file name',nargs='?')
 parser.add_argument('--emails',action='store_true',dest='send_emails',default=False,help='Call --email if you want emails to be sent')
+parser.add_argument('--test',action='store_true',dest='test',default=False,help='Send emails to instructor email.')
 parser.add_argument('--plots',action='store_true',dest='make_plots_bool',default=False,help='Call --plots if you want plots to be made')
 parser.add_argument('--emailplots',action='store_true',dest='email_and_plots',default=False,help='Call --plots if you want plots to be made')
 parser.add_argument('--solutions-file',dest='solutions_filename',type=str,default='solutions.py',help='Name of the file that has the solutions/feedback')
@@ -65,7 +66,7 @@ password = None
 if send_emails or email_and_plots:
     my_email_address = getpass.getpass("Enter address from which to send email: ")
     password = getpass.getpass()
-    email_subject=input("What do you want your email subject line to say?")
+    email_subject=raw_input("What do you want your email subject line to say? ")
 
 scores_file = csv.writer(open(args.student_score_file, "wb"),delimiter=',')
 scores_file.writerow(['Date/Time','Student Email','Student Name','Student Score'])
@@ -113,7 +114,7 @@ for i,student in enumerate(student_responses):
 
     # Emailing the plots- not in the right order.
     if email_and_plots:
-        image_path ='/home/sara/ggrade/scripts/student%d.png' % (i+1) 
+        image_path ='./student%d.png' % (i+1) 
 
     	if password is not None:
          	email_grade_summaries_plots(student_email,my_email_address,email_subject,output,image_path,password,isHTML=True)
@@ -171,7 +172,9 @@ for i,student in enumerate(student_responses):
     # Email the student the feedback.
     ###########################################################################
     if password is not None and send_emails:
-         email_grade_summaries(student_email,my_email_address,email_subject,output,password,isHTML=True)
+        if args.test:
+            student_email = my_email_address 
+        email_grade_summaries(student_email,my_email_address,email_subject,output,password,isHTML=True)
 
 
 ##########################################################################

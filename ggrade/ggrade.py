@@ -61,10 +61,10 @@ def email_grade_summaries(email_address,msg_from,msg_subject,msg_body,password="
         session.starttls()
         session.login(smtpuser,smtppasswd)
         session.sendmail(me, email_address, msg.as_string())
-        print "Successfully sent email"
+        print "Successfully sent email for %s" % (email_address)
         session.quit()
     except smtplib.SMTPException:
-        print "Error: unable to send email"
+        print "Error: unable to send email for %s" % (email_address)
 
 ################################################################################
 def email_grade_summaries_plots(email_address,msg_from,msg_subject,msg_body,image_file_name,password="xxx",isHTML=False):
@@ -181,7 +181,7 @@ def grade_problem(question,answer,solution,points_per_question,student_name,feed
         # This is not a list but it is also not multiple possible answers. 
         elif answer.strip()==solution.strip() or solution==None or solution =='' or solution.lower() in answer.lower(): 
             correct=1
-        elif solution=='essay':
+        elif solution.lower()=='essay':
 		correct =1
 		
                 essay_output += "\n\\newpage \n{\large \\bf %s}\\\ \n" % (student_name)
