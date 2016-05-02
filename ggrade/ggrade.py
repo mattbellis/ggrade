@@ -163,7 +163,9 @@ def grade_problem(question,answer,solution,points_per_question,student_name,feed
         elif solution.isdigit() or is_float(solution): # Check to see if the answer is a number and if it is in the range.
             if answer.isdigit() or is_float(answer):
                 fraction_difference = (float(answer) - float(solution))/(float(solution)+.00000000001)
-                within_tolerance = np.abs(fraction_difference)<0.05
+                within_tolerance = np.abs(fraction_difference)<0.01
+                #within_tolerance = np.abs(fraction_difference)<0.05
+                #within_tolerance = np.abs(fraction_difference)<0.10
                 if within_tolerance:
                     correct=1
                 else:

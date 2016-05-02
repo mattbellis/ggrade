@@ -64,7 +64,8 @@ my_email_address = None
 password = None
 
 if send_emails or email_and_plots:
-    my_email_address = getpass.getpass("Enter address from which to send email: ")
+    #my_email_address = getpass.getpass("Enter address from which to send email: ")
+    my_email_address = "matthew.bellis@gmail.com"
     password = getpass.getpass()
     email_subject=raw_input("What do you want your email subject line to say? ")
 
