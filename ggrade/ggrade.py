@@ -142,7 +142,7 @@ def grade_problem(question,answer,solution,points_per_question,student_name,feed
                         sub_points += points_per_answer
 
 	    # Takes points off if student checked a wrong answer - uncomment to utilize this.                    
-            '''# Check to see if someone entered something wrong 
+            #'''# Check to see if someone entered something wrong 
             for mans in multiple_answers:
                 found_a_match = False
                 for msol in multiple_solutions:
@@ -151,7 +151,7 @@ def grade_problem(question,answer,solution,points_per_question,student_name,feed
                 if found_a_match is False:
                     sub_points -= points_per_answer
                     partial_answer = mans
-            '''
+            #'''
 
             if int(sub_points)==points_per_question:
                 correct = 1 # Got them all!

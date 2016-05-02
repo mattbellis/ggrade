@@ -10,7 +10,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('infile_name', type=str, default=None, help='Input file name',nargs='?')
     parser.add_argument('--solutions-file', dest='outfile_name', type=str,\
-            default='solutions.py', help='Name of output file to write the solutions to.')
+            default=None, help='Name of output file to write the solutions to.')
 
     args = parser.parse_args()
 
@@ -50,7 +50,13 @@ def main():
 
     # Write the output to a file.
     
-    outfile_name = args.outfile_name
+    outfile_name = "solutions.py"
+    if args.outfile_name is not None:
+        outfile_name = args.outfile_name
+    else:
+        outfile_name = args.infile_name.split('.tsv')[0] 
+        outfile_name = "SOLUTIONS_%s.py" % (outfile_name)
+
     outfile = open(outfile_name,'w+')
     outfile.write("# -*- coding: utf-8 -*-")
     outfile.write("\n")
