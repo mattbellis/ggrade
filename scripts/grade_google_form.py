@@ -19,8 +19,8 @@ parser.add_argument('--emails',action='store_true',dest='send_emails',default=Fa
 parser.add_argument('--test',action='store_true',dest='test',default=False,help='Send emails to instructor email.')
 parser.add_argument('--plots',action='store_true',dest='make_plots_bool',default=False,help='Call --plots if you want plots to be made')
 parser.add_argument('--emailplots',action='store_true',dest='email_and_plots',default=False,help='Call --plots if you want plots to be made')
-parser.add_argument('--solutions-file',dest='solutions_filename',type=str,default='solutions.py',help='Name of the file that has the solutions/feedback')
-parser.add_argument('--score_file',dest='student_score_file',type=str,default='student_scores.csv',help='Name of the file that will organize the students email and score.')
+parser.add_argument('--solutions-file',dest='solutions_filename',type=str,default=None,help='Name of the file that has the solutions/feedback')
+parser.add_argument('--score_file',dest='student_score_file',type=str,default=None,help='Name of the file that will organize the students email and score.')
 parser.add_argument('--essay_file',dest='essay_file_name',type=str,default='essay.tex',help='If there is an essay that needs to be written to a file, type the name of the file you want created for the essays/long answers to be graded by hand.')
 args=parser.parse_args()
 
@@ -40,7 +40,11 @@ questions,solutions,student_responses=read_tab_file(args.infilename)
 # and feedback.
 ###############################################################################
 
-solutions_filename = args.solutions_filename.strip('.py') 
+#solutions_filename = args.solutions_filename.strip('.py') 
+solutions_filename = args.infilename.split('.tsv')[0]
+solutions_filename = "SOLUTIONS_%s" % (solutions_filename)
+
+#solutions_filename = args.solutions_filename.strip('.py') 
 solutions_file = __import__(solutions_filename)
 
 solutions = getattr(solutions_file,'solutions')
@@ -64,11 +68,19 @@ my_email_address = None
 password = None
 
 if send_emails or email_and_plots:
-    my_email_address = getpass.getpass("Enter address from which to send email: ")
+    #my_email_address = getpass.getpass("Enter address from which to send email: ")
+    my_email_address = "matthew.bellis@gmail.com"
     password = getpass.getpass()
     email_subject=raw_input("What do you want your email subject line to say? ")
 
-scores_file = csv.writer(open(args.student_score_file, "wb"),delimiter=',')
+student_score_file = None
+if args.student_score_file is not None:
+    student_score_file = args.student_score_file 
+else:
+    student_score_file = args.infilename.split('.tsv')[0]
+    student_score_file = "STUDENT_SCORES_%s.csv" % (student_score_file)
+
+scores_file = csv.writer(open(student_score_file, "wb"),delimiter=',')
 scores_file.writerow(['Date/Time','Student Email','Student Name','Student Score'])
 
 
@@ -174,6 +186,8 @@ for i,student in enumerate(student_responses):
     if password is not None and send_emails:
         if args.test:
             student_email = my_email_address 
+            #student_email = "arussell@siena.edu"
+            #student_email = "gvernizzi@siena.edu"
         email_grade_summaries(student_email,my_email_address,email_subject,output,password,isHTML=True)
 
 
