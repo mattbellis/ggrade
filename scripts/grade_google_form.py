@@ -40,9 +40,10 @@ questions,solutions,student_responses=read_tab_file(args.infilename)
 # and feedback.
 ###############################################################################
 
-#solutions_filename = args.solutions_filename.strip('.py') 
 solutions_filename = args.infilename.split('.tsv')[0]
 solutions_filename = "SOLUTIONS_%s" % (solutions_filename)
+if args.solutions_filename is not None:
+    solutions_filename = args.solutions_filename.strip('.py') 
 
 #solutions_filename = args.solutions_filename.strip('.py') 
 solutions_file = __import__(solutions_filename)
